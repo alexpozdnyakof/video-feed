@@ -8,7 +8,8 @@
     "start:frontend": "pnpm --filter=frontend dev",
     "build:frontend": "pnpm --filter=frontend build",
     "start:backend": "pnpm --filter=backend dev",
-    "deploy:backend": "pnpm --filter=backend deploy"
+    "deploy:backend": "pnpm --filter=backend deploy",
+    "typegen:backend": "pnpm --filter=backend cf-typegen"
   },
   "keywords": [],
   "author": "",
