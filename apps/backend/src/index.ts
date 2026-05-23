@@ -11,8 +11,17 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
+function cors(origin: string) {
+	return {
+		'Access-Control-Allow-Origin': origin,
+		'Access-COntrol-Allow-Methods': 'GET, OPTIONS',
+		'Access-Control-Allow-Headers': 'Range',
+		'Access-Control-Expose-Headers': 'Content-Range, Accept-Ranges, Content-Length',
+	};
+}
+
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
-		return new Response("Hello World!");
+		return new Response('Hello World!');
 	},
 } satisfies ExportedHandler<Env>;
