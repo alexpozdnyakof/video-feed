@@ -1,16 +1,3 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Bind resources to your worker in `wrangler.jsonc`. After adding bindings, a type definition for the
- * `Env` object can be regenerated with `npm run cf-typegen`.
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
-
 interface GoogleFile {
 	id: string;
 	name: string;
@@ -18,6 +5,7 @@ interface GoogleFile {
 	thumbnailLink?: string;
 	videoMediaMetadata?: { durationMills?: string };
 }
+
 function cors(origin: string) {
 	return {
 		'Access-Control-Allow-Origin': origin,
@@ -27,16 +15,34 @@ function cors(origin: string) {
 	};
 }
 
+function bytesToMegabytes(bytes: number): number {
+	return Math.round(((bytes / 1024 / 1024) * 10) / 10);
+}
+
+function formatDuration(ms: number): string {
+	const s = Math.floor(ms / 1000);
+	const m = Math.floor(s / 60);
+	return `${m}:${String(s % 60).padStart(2, '0')}`;
+}
+
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
 		const url = new URL(request.url);
 		const origin = env.ALLOWED_ORIGIN || '*';
+
 		if (request.method === 'OPTIONS') {
 			return new Response(null, { headers: cors(origin) });
 		}
+
 		if (url.pathname === '/feed') {
 			return getVideoFeed(url, env, origin);
 		}
+
+		if (url.pathname === '/stream') {
+			return getVideoStream(request, url, env, origin);
+		}
+
+		return new Response('Not Found', { status: 404 });
 	},
 } satisfies ExportedHandler<Env>;
 
@@ -77,5 +83,42 @@ async function getVideoFeed(url: URL, env: Env, origin: string) {
 			'Cache-Control': 'public, max-age=60',
 			...cors(origin),
 		},
+	});
+}
+async function getVideoStream(request: Request, url: URL, env: Env, origin: string) {
+	const fileId = url.searchParams.get('fileId');
+
+	if (!fileId) {
+		return new Response('fileId required', { status: 400 });
+	}
+	// TODO:: SecurityWarning(!) валидировать fileId регуляркой
+
+	const rangeHeader = request.headers.get('Range') ?? '';
+	const response = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${env.GOOGLE_API_KEY}`, {
+		headers: { ...(rangeHeader && { Range: rangeHeader }) },
+	});
+
+	if (!response.ok && response.status !== 206) {
+		return new Response('Failed to fetch', {
+			status: response.status,
+			headers: cors(origin),
+		});
+	}
+
+	const headers = new Headers({
+		'Content-Type': response.headers.get('Content-Type') ?? 'video/mp4',
+		'Accept-Ranges': 'bytes',
+		'Cache-Control': 'public, max-age=86400',
+		...cors(origin),
+	});
+
+	const contentRange = response.headers.get('Content-Range');
+	const contentLength = response.headers.get('Content-Length');
+	if (contentRange) headers.set('Content-Range', contentRange);
+	if (contentLength) headers.set('Content-Length', contentLength);
+
+	return new Response(response.body, {
+		status: response.status,
+		headers,
 	});
 }
