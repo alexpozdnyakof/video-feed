@@ -14,7 +14,7 @@
 function cors(origin: string) {
 	return {
 		'Access-Control-Allow-Origin': origin,
-		'Access-COntrol-Allow-Methods': 'GET, OPTIONS',
+		'Access-Control-Allow-Methods': 'GET, OPTIONS',
 		'Access-Control-Allow-Headers': 'Range',
 		'Access-Control-Expose-Headers': 'Content-Range, Accept-Ranges, Content-Length',
 	};
