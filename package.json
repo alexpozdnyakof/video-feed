@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:frontend": "pnpm --filter=frontend dev",
-    "build:frontend": "pnpm --filter=frontend build",
-    "start:backend": "pnpm --filter=backend dev",
-    "deploy:backend": "pnpm --filter=backend deploy",
-    "typegen:backend": "pnpm --filter=backend cf-typegen"
+    "start:videofeed": "pnpm --filter=videofeed dev",
+    "build:videofeed": "pnpm --filter=videofeed build",
+    "start:worker": "pnpm --filter=worker dev",
+    "deploy:worker": "pnpm --filter=worker deploy",
+    "typegen:backend": "pnpm --filter=worker cf-typegen"
   },
   "keywords": [],
   "author": "",
