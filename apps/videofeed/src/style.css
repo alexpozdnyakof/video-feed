@@ -3,6 +3,11 @@
   --text-h: #08060d;
   --bg: #fff;
   --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --video-player-ratio: 0.5625;
+  --video-player-height: calc(100dvh - 64px);
+  --video-player-width: calc(
+    var(--video-player-height) * var(--video-player-ratio)
+  );
 
   font: 100%/145% var(--sans);
   color-scheme: light dark;
@@ -58,8 +63,8 @@ body {
   overflow-y: scroll;
 }
 
-.video {
-  width: 50%;
+.video-card {
+  width: auto;
   height: 100%;
   justify-content: center;
   scroll-snap-align: start;
@@ -69,12 +74,19 @@ body {
   flex: 0 0 auto;
 }
 
-.video-player {
-  height: 100%;
-}
-
-.video-cover {
+.video-card_content {
   width: 100%;
   height: 100%;
-  background-color: #333;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.video-card_player {
+  width: var(--video-player-width);
+  height: var(--video-player-height);
+}
+
+.sentinel {
+  width: 100%;
+  height: 1px;
 }
