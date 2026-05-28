@@ -64,8 +64,8 @@ body {
 }
 
 .video-card {
-  width: auto;
-  height: 100%;
+  width: var(--video-player-width);
+  height: var(--video-player-height);
   justify-content: center;
   scroll-snap-align: start;
   scroll-snap-stop: always;
