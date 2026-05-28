@@ -2,6 +2,8 @@
  * @typedef {Object} VideoFile
  * @property {string} id
  * @property {string} name
+ * @property {string} url
+ * @property {string} thumbnail
  * @property {string} [size]
  * @property {{duratinMills?: string }} [videoMediaMetadata]
  */
@@ -25,6 +27,12 @@ export async function* videoFeedApi(apiUrl) {
     if (!response.ok) throw new Error(response.status.toString());
     const data = await response.json();
     nextPageToken = data.nextPageToken;
-    yield data.videos;
+    yield data.videos.map(
+      /** @param {VideoFile} video */(video) => ({
+        ...video,
+        url: apiUrl.concat(video.url),
+        thumbnail: apiUrl.concat(video.thumbnail),
+      }),
+    );
   }
 }
