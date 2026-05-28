@@ -72,6 +72,7 @@ body {
   scroll-padding-top: 2rem;
   padding-block: 2rem;
   flex: 0 0 auto;
+  position: relative;
 }
 
 .video-card_content {
@@ -79,14 +80,26 @@ body {
   height: 100%;
   border-radius: 12px;
   overflow: hidden;
+  position: relative;
 }
-
+.video-card_player-container {
+  width: var(--video-player-width);
+  height: var(--video-player-height);
+  position: relative;
+}
 .video-card_player {
   width: var(--video-player-width);
   height: var(--video-player-height);
 }
-
-.sentinel {
-  width: 100%;
-  height: 1px;
+.video-player__preload-cover {
+  background-image: var(--thumbnail);
+  width: var(--video-player-width);
+  height: var(--video-player-height);
+  position: absolute;
+  top: 0;
+  left: 0;
+  filter: blur(24px);
+  background-size: cover;
+  transform: scale(1.1);
+  transition: 0.3s ease-out;
 }
