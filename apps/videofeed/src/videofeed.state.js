@@ -1,5 +1,7 @@
 /** @import  {Effect, Message, UnionConstructor} from "../types" */
 import { videoFeedApi } from "./videofeed.api";
+import { effect, clamp } from "./utils";
+
 const CHUNK_SIZE = 6;
 
 /**
@@ -103,14 +105,8 @@ const SIZE = ABOVE + ACTIVE + BELOW;
  * @returns {Set<number>}
  */
 const activePlayers = (activeIdx, length) => {
-  const start = Math.max(0, Math.min(activeIdx - ABOVE, length - SIZE));
+  const start = clamp(activeIdx - ABOVE, 0, length - SIZE);
   const s = new Set();
   for (let i = start; i < start + SIZE && i < length; i++) s.add(i);
   return s;
 };
-/** @type {UnionConstructor<Effect>} */
-function effect(type, payload) {
-  return /** @type {any} */ ({ type, payload });
-}
-
-const clamp = (value, min, max) => Math.min(Math.max(value, min), max);

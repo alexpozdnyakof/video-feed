@@ -1,6 +1,8 @@
 /** @import  {Effect, Message, UnionConstructor} from "../types" */
 import { videoFeedState } from "./videofeed.state";
 import { VideoFeed, VideoPlayer, Placeholder } from "./ui";
+import { message } from "./utils";
+
 /**
  * @param {string} apiUrl
  * @returns void
@@ -21,7 +23,7 @@ export function videoFeed(apiUrl) {
         if (isIntersecting) {
           const nextIdx = videoCardsIdx.get(target);
           if (nextIdx !== undefined) {
-            emit({ type: "scroll", payload: { nextIdx } });
+            emit(message("scroll", { nextIdx }));
           }
         }
       }),
@@ -161,9 +163,4 @@ function asyncEventQueue() {
     }
   };
   return { iterator, emit };
-}
-
-/** @type {UnionConstructor<Message>} */
-function message(type, payload) {
-  return /** @type {any} */ ({ type, payload });
 }
