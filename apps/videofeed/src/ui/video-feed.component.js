@@ -1,28 +1,26 @@
 import { html } from "html";
 import styles from "./video-feed.module.css";
 import { IconButton } from "./icon-button.component";
+import { SideNavPanel } from "./side-nav-panel.component";
 import { UpArrowIcon, DownArrowIcon } from "./icons";
 
-export function VideoFeed({ emit }) {
+/** @param {{onScrollUp: () => void; onScrollDown: () => void}} props */
+export function VideoFeed({ onScrollUp, onScrollDown }) {
   return html`
     <div class="${styles.videoFeedContainer}">
       <div id="videoFeed" class="${styles.videoFeed}"></div>
-      <div class="${styles.videoFeedControls}">
-        <div class="${styles.videoFeedControlsContainer}">
-          <div class="${styles.videoFeedControlsButtons}">
-            ${IconButton({
-    children: UpArrowIcon(),
-    onClick: () =>
-      emit({ type: "scrollTo", payload: { direction: "up" } }),
+      ${SideNavPanel({
+    children: [
+      IconButton({
+        children: UpArrowIcon(),
+        onClick: onScrollUp,
+      }),
+      IconButton({
+        children: DownArrowIcon(),
+        onClick: onScrollDown,
+      }),
+    ],
   })}
-            ${IconButton({
-    children: DownArrowIcon(),
-    onClick: () =>
-      emit({ type: "scrollTo", payload: { direction: "down" } }),
-  })}
-          </div>
-        </div>
-      </div>
     </div>
   `;
 }

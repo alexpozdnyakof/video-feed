@@ -20,18 +20,3 @@
   display: flex;
   flex-direction: column;
 }
-
-.videoFeedControls {
-  width: 96px;
-  position: relative;
-}
-
-.videoFeedControlsContainer {
-  position: fixed;
-}
-
-.videoFeedControlsButtons {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}

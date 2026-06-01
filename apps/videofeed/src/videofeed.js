@@ -8,9 +8,11 @@ import { VideoFeed, VideoPlayer, Placeholder } from "./ui";
 export function videoFeed(apiUrl) {
   const videoCards = /**@type Array<HTMLElement>*/[];
   const videoCardsIdx = /**@type WeakMap<HTMLElement, number>*/ new WeakMap();
+  const onScrollUp = () => emit(message("scrollTo", { direction: "up" }));
+  const onScrollDown = () => emit(message("scrollTo", { direction: "down" }));
 
   const { iterator, emit } = asyncEventQueue();
-  const feed = VideoFeed({ emit });
+  const feed = VideoFeed({ onScrollUp, onScrollDown });
   const videosSlot = feed.querySelector("#videoFeed");
 
   const videoObserver = new IntersectionObserver(
