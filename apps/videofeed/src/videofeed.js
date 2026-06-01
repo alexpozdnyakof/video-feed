@@ -1,7 +1,7 @@
 /** @import  {Effect, Message, UnionConstructor} from "../types" */
 import { videoFeedState } from "./videofeed.state";
-import { VideoFeed, VideoPlaceholder } from "./videofeed.ui";
-import { VideoPlayer } from "./ui";
+import { VideoFeed } from "./videofeed.ui";
+import { VideoPlayer, Placeholder } from "./ui";
 /**
  * @param {string} apiUrl
  * @returns void
@@ -37,7 +37,7 @@ export function videoFeed(apiUrl) {
         const fragment = document.createDocumentFragment();
         const cards = new Array(count)
           .fill(0)
-          .map(() => /** @type {HTMLElement} */(VideoPlaceholder()));
+          .map(() => /** @type {HTMLElement} */(Placeholder()));
 
         cards.forEach((card) => {
           videoCards.push(card);

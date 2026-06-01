@@ -1,0 +1,14 @@
+.placeholder {
+  width: var(--video-player-width);
+  height: var(--video-player-height);
+  justify-content: center;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  scroll-padding-top: 2rem;
+  display: flex;
+  flex: 0 0 auto;
+  position: relative;
+  padding-block: 2rem;
+  border-radius: 12px;
+  overflow: hidden;
+}
