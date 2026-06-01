@@ -1,5 +1,5 @@
 import { html } from "html";
-
+import { Button } from "./button.component";
 export const VideoCard = ({ thumbnail, url }) => html`
   <article class="video-card">
     <div class="video-card_content">${VideoPlayer({ thumbnail, url })}</div>
@@ -53,16 +53,18 @@ export function VideoFeed({ emit }) {
       <div class="video-feed_cards"></div>
       <div class="video-feed_controls">
         <div class="video-feed_controls-container">
-          ${Button({
+          <div class="video-feed_controls_buttons">
+            ${Button({
     children: UpArrowIcon(),
-    className: "up",
-    onClick: () => emit({ type: "scrollUp" }),
+    onClick: () =>
+      emit({ type: "scrollTo", payload: { direction: "up" } }),
   })}
-          ${Button({
+            ${Button({
     children: DownArrowIcon(),
-    className: "down",
-    onClick: () => emit({ type: "scrollDown" }),
+    onClick: () =>
+      emit({ type: "scrollTo", payload: { direction: "down" } }),
   })}
+          </div>
         </div>
       </div>
     </div>
@@ -99,11 +101,3 @@ const DownArrowIcon = () =>
       d="M12 17.502a1 1 0 0 1-.707-.293l-9-9.004a1 1 0 0 1 1.414-1.414L12 15.087l8.293-8.296a1 1 0 0 1 1.414 1.414l-9 9.004a1 1 0 0 1-.707.293Z"
     ></path>
   </svg>`;
-
-export function Button({ className, onClick, children }) {
-  const element = html`<button class="${className}">${children}</button>`;
-  if (onClick) {
-    element.addEventListener("click", onClick);
-  }
-  return element;
-}
