@@ -1,10 +1,5 @@
 import { html } from "html";
-import { Button } from "./button.component";
-export const VideoCard = ({ thumbnail, url }) => html`
-  <article class="video-card">
-    <div class="video-card_content">${VideoPlayer({ thumbnail, url })}</div>
-  </article>
-`;
+import { IconButton } from "./ui";
 
 export const VideoPlaceholder = () => html`
   <article class="video-placeholder"></article>

@@ -1,10 +1,10 @@
 import { html } from "html";
-import styles from "./button.module.css";
+import styles from "./icon-button.module.css";
 
 /**
  * @param {{onClick: () => void; children: Node; className?: string}} props
  */
-export function Button({ onClick, children, className }) {
+export function IconButton({ onClick, children, className }) {
   const element = html`<button
     class="${[styles.button, className ? className : ""].join(" ")}"
   >
