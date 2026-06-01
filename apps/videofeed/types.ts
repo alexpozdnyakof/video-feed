@@ -7,73 +7,57 @@ export interface VideoFile {
   videoMediaMetadata?: { durationMills?: string };
 }
 
-interface FetchMessage {
-  type: "fetch";
-}
-interface ScrollMessage {
-  type: "scroll";
-  payload: {
-    nextIdx: number;
+export type Message =
+  | {
+    type: "fetch";
+  }
+  | {
+    type: "fetch";
+  }
+  | {
+    type: "scrollTo";
+    payload: {
+      direction: "up" | "down";
+    };
   };
-}
-interface ScrollToMessage {
-  type: "scrollTo";
-  payload: {
-    direction: "up" | "down";
-  };
-}
-
-export type Message = FetchMessage | ScrollMessage | ScrollToMessage;
-
-interface MountEffect {
-  type: "mount";
-  payload: {
-    count: number;
-  };
-}
-
-interface AttachVideoEffect {
-  type: "attachVideo";
-  payload: {
-    videos: Record<number, VideoFile>;
-  };
-}
-
-interface DetachVideoEffect {
-  type: "detachVideo";
-  payload: {
-    idxsToDetach: Array<number>;
-  };
-}
-
-interface PlayEffect {
-  type: "play";
-  payload: {
-    idx: number;
-  };
-}
-
-interface PauseEffect {
-  type: "pause";
-  payload: {
-    idx: number;
-  };
-}
-
-interface ScrollToEffect {
-  type: "scrollTo";
-  payload: {
-    idx: number;
-  };
-}
 
 export type Effect =
-  | MountEffect
-  | AttachVideoEffect
-  | DetachVideoEffect
-  | PlayEffect
-  | PauseEffect
-  | ScrollToEffect;
+  | {
+    type: "mount";
+    payload: {
+      count: number;
+    };
+  }
+  | {
+    type: "attachVideo";
+    payload: {
+      videos: Record<number, VideoFile>;
+    };
+  }
+  | {
+    type: "detachVideo";
+    payload: {
+      idxsToDetach: Array<number>;
+    };
+  }
+  | {
+    type: "play";
+    payload: {
+      idx: number;
+    };
+  }
+  | {
+    type: "pause";
+    payload: {
+      idx: number;
+    };
+  }
+  | {
+    type: "scrollTo";
+    payload: {
+      idx: number;
+    };
+  };
 
 export type AnyUnion = { type: string; payload?: unknown };
 
