@@ -6,66 +6,33 @@ export interface VideoFile {
   url: string;
   videoMediaMetadata?: { durationMills?: string };
 }
+type Event<Type extends string, Payload = never> = Payload extends never
+  ? { type: Type }
+  : { type: Type; payload: Payload };
 
 export type Message =
-  | {
-    type: "fetch";
-  }
-  | {
-    type: "fetch";
-  }
-  | {
-    type: "scrollTo";
-    payload: {
-      direction: "up" | "down";
-    };
-  };
+  | Event<"fetch">
+  | Event<"scroll", Record<"nextIdx", number>>
+  | Event<"scrollTo", Record<"direction", "up" | "down">>;
 
 export type Effect =
-  | {
-    type: "mount";
-    payload: {
-      count: number;
-    };
-  }
-  | {
-    type: "attachVideo";
-    payload: {
-      videos: Record<number, VideoFile>;
-    };
-  }
-  | {
-    type: "detachVideo";
-    payload: {
-      idxsToDetach: Array<number>;
-    };
-  }
-  | {
-    type: "play";
-    payload: {
-      idx: number;
-    };
-  }
-  | {
-    type: "pause";
-    payload: {
-      idx: number;
-    };
-  }
-  | {
-    type: "scrollTo";
-    payload: {
-      idx: number;
-    };
-  };
+  | Event<"mount", Record<"count", number>>
+  | Event<"attachVideo", Record<"videos", { [key: number]: VideoFile }>>
+  | Event<"detachVideo", Record<"idxsToDetach", Array<number>>>
+  | Event<"play", Record<"idx", number>>
+  | Event<"pause", Record<"idx", number>>
+  | Event<"scrollTo", Record<"idx", number>>;
 
-export type AnyUnion = { type: string; payload?: unknown };
+/** CONSTRUCTOR HEPLER TYPES */
+export type MessageOrEffect = { type: string; payload?: unknown };
 
-export type UnionType<T extends AnyUnion> = T["type"];
-export type UnionPayload<T extends AnyUnion, K extends UnionType<T>> =
+export type GetType<T extends MessageOrEffect> = T["type"];
+export type GetPayload<T extends MessageOrEffect, K extends GetType<T>> =
   Extract<T, { type: K }> extends { payload: infer P } ? P : never;
 
-export type UnionConstructor<T extends AnyUnion> = <K extends UnionType<T>>(
+export type UnionConstructor<T extends MessageOrEffect> = <
+  K extends GetType<T>,
+>(
   type: K,
-  ...args: UnionPayload<T, K> extends never ? [] : [payload: UnionPayload<T, K>]
+  ...args: GetPayload<T, K> extends never ? [] : [payload: GetPayload<T, K>]
 ) => Extract<T, { type: K }>;
