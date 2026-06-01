@@ -1,17 +1,10 @@
 .videoFeedControls {
-  width: fit-content;
-  position: relative;
-}
-
-.videoFeedControlsContainer {
   display: flex;
-  position: fixed;
+  position: sticky;
   align-items: center;
   height: 100dvh;
-  top: 0;
   flex-direction: column;
   width: fit-content;
-  right: 32px;
   gap: 8px;
   justify-content: center;
 }

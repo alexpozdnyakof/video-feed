@@ -4,11 +4,11 @@
   justify-content: center;
   scroll-snap-align: start;
   scroll-snap-stop: always;
-  scroll-padding-top: 2rem;
+  scroll-padding-top: calc(var(--grid-size) * 4);
   display: flex;
   flex: 0 0 auto;
   position: relative;
-  padding-block: 2rem;
-  border-radius: 12px;
+  padding-block: calc(var(--grid-size) * 4);
+  border-radius: calc(var(--grid-size) * 2);
   overflow: hidden;
 }

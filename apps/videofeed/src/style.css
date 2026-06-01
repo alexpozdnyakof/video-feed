@@ -2,9 +2,11 @@
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;
+  --grid-size: 8px;
   --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --container-padding: calc(var(--grid-size) * 4);
   --video-player-ratio: 0.5625;
-  --video-player-height: calc(100dvh - 64px);
+  --video-player-height: calc(100dvh - calc(var(--container-padding) * 2));
   --video-player-width: calc(
     var(--video-player-height) * var(--video-player-ratio)
   );
@@ -35,5 +37,5 @@ body {
 
 #app {
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
 }

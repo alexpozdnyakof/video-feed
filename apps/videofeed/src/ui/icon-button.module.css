@@ -1,6 +1,6 @@
 .button {
-  width: 56px;
-  height: 56px;
+  width: calc(var(--grid-size) * 7);
+  height: calc(var(--grid-size) * 7);
   border-radius: 50%;
   border: none;
   display: flex;

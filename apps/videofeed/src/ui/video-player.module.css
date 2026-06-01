@@ -18,7 +18,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  filter: blur(24px);
+  filter: blur(calc(var(--grid-size) * 3));
   background-size: cover;
   transform: scale(1.1);
   transition: 0.3s ease-out;
