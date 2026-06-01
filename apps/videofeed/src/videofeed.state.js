@@ -78,12 +78,14 @@ export async function* videoFeedState(apiUrl, messages) {
         break;
       }
       case "scrollTo": {
-        const nextIdx =
+        let nextIdx =
           message.payload.direction === "up"
             ? state.active - 1
             : state.active + 1;
-
-        yield effect("scrollTo", { idx: nextIdx });
+        nextIdx = clamp(nextIdx, 0, state.videos.length);
+        if (nextIdx !== state.active) {
+          yield effect("scrollTo", { idx: nextIdx });
+        }
         break;
       }
     }
@@ -98,6 +100,7 @@ const SIZE = ABOVE + ACTIVE + BELOW;
 /**
  * @param {number} activeIdx
  * @param {number} length
+ * @returns {Set<number>}
  */
 const activePlayers = (activeIdx, length) => {
   const start = Math.max(0, Math.min(activeIdx - ABOVE, length - SIZE));
@@ -109,3 +112,5 @@ const activePlayers = (activeIdx, length) => {
 function effect(type, payload) {
   return /** @type {any} */ ({ type, payload });
 }
+
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
