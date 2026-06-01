@@ -1,7 +1,7 @@
 /** @import  {Effect, Message, UnionConstructor} from "../types" */
 import { videoFeedState } from "./videofeed.state";
-import { VideoFeed, VideoCard, VideoPlaceholder } from "./videofeed.ui";
-
+import { VideoFeed, VideoPlaceholder } from "./videofeed.ui";
+import { VideoPlayer } from "./ui";
 /**
  * @param {string} apiUrl
  * @returns void
@@ -57,7 +57,7 @@ export function videoFeed(apiUrl) {
           const { url, thumbnail } = video;
 
           const videoCard = /** @type {HTMLMediaElement} */ (
-            VideoCard({ url, thumbnail })
+            VideoPlayer({ url, thumbnail })
           );
           videoCards[idx].append(videoCard);
         }
@@ -117,7 +117,7 @@ export function videoFeed(apiUrl) {
 
   return {
     /**
-     * @param {HTMLElement} hostElement
+     * @param {Element} hostElement
      */
     async mount(hostElement) {
       hostElement.appendChild(feed);

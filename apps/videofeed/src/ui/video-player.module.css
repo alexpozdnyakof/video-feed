@@ -1,0 +1,25 @@
+.videoCard {
+  width: var(--video-player-width);
+  height: var(--video-player-height);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.videoPlayer {
+  width: var(--video-player-width);
+  height: var(--video-player-height);
+}
+
+.videoCover {
+  background-image: var(--thumbnail);
+  width: var(--video-player-width);
+  height: var(--video-player-height);
+  position: absolute;
+  top: 0;
+  left: 0;
+  filter: blur(24px);
+  background-size: cover;
+  transform: scale(1.1);
+  transition: 0.3s ease-out;
+}

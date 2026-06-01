@@ -5,43 +5,6 @@ export const VideoPlaceholder = () => html`
   <article class="video-placeholder"></article>
 `;
 
-/**
- *  @param {{thumbnail: string; url: string; autoplay?: boolean}} props
- *  @returns {HTMLElement}
- */
-export const VideoPlayer = ({ thumbnail, url, autoplay = false }) => {
-  const videoEl = /** @type {HTMLVideoElement} */ (
-    html`<video
-      class="video-card_player"
-      playsinline
-      muted
-      loop
-      ${autoplay ? "autoplay" : ""}
-      preload="auto"
-      src=${url}
-    />`
-  );
-
-  const thumbnailEl = html`<div
-    style="--thumbnail: url(${thumbnail});"
-    class="video-player__preload-cover"
-  ></div>`;
-
-  videoEl.load();
-
-  videoEl.addEventListener(
-    "canplay",
-    () => {
-      thumbnailEl.style.opacity = "0";
-    },
-    { once: true },
-  );
-
-  return html`<div class="video-card_player-container">
-    ${thumbnailEl} ${videoEl}
-  </div>`;
-};
-
 export function VideoFeed({ emit }) {
   return html`
     <div class="video-feed">
@@ -49,12 +12,12 @@ export function VideoFeed({ emit }) {
       <div class="video-feed_controls">
         <div class="video-feed_controls-container">
           <div class="video-feed_controls_buttons">
-            ${Button({
+            ${IconButton({
     children: UpArrowIcon(),
     onClick: () =>
       emit({ type: "scrollTo", payload: { direction: "up" } }),
   })}
-            ${Button({
+            ${IconButton({
     children: DownArrowIcon(),
     onClick: () =>
       emit({ type: "scrollTo", payload: { direction: "down" } }),
