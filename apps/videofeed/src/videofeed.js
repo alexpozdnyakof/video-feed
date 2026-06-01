@@ -1,7 +1,6 @@
 /** @import  {Effect, Message, UnionConstructor} from "../types" */
 import { videoFeedState } from "./videofeed.state";
-import { VideoFeed } from "./videofeed.ui";
-import { VideoPlayer, Placeholder } from "./ui";
+import { VideoFeed, VideoPlayer, Placeholder } from "./ui";
 /**
  * @param {string} apiUrl
  * @returns void
@@ -12,7 +11,7 @@ export function videoFeed(apiUrl) {
 
   const { iterator, emit } = asyncEventQueue();
   const feed = VideoFeed({ emit });
-  const videosSlot = feed.querySelector(".video-feed_cards");
+  const videosSlot = feed.querySelector("#videoFeed");
 
   const videoObserver = new IntersectionObserver(
     (entries) =>
