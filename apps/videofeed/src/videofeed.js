@@ -76,13 +76,15 @@ export function videoFeed(apiUrl) {
         });
         break;
       }
-
       case "play": {
         videoCards[effect.payload.idx]
           .querySelector("video")
           ?.play()
           .catch((/**@type {Error}*/ e) => {
-            if (e.name !== "AbortError") throw e;
+            if (!(e instanceof DOMException)) throw e;
+            if (e.name === "AbortError") return;
+            if (e.name === "NotAllowedError") return;
+            throw e;
           });
         break;
       }
