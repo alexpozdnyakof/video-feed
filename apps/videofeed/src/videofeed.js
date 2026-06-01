@@ -1,107 +1,101 @@
-import { html } from "html";
+/** @import  {Effect, Message, UnionConstructor} from "../types" */
 import { videoFeedState } from "./videofeed.state";
+import { VideoFeed, VideoCard, VideoPlaceholder } from "./videofeed.ui";
 
 /**
  * @param {string} apiUrl
- * @returns
+ * @returns void
  */
-
 export function videoFeed(apiUrl) {
   const videoCards = /**@type Array<HTMLElement>*/[];
   const videoCardsIdx = /**@type WeakMap<HTMLElement, number>*/ new WeakMap();
 
-  const feed = VideoFeed();
   const { iterator, emit } = asyncEventQueue();
+  const feed = VideoFeed({ emit });
+  const videosSlot = feed.querySelector(".video-feed_cards");
 
   const videoObserver = new IntersectionObserver(
     (entries) =>
       entries.forEach(({ target, isIntersecting }) => {
         if (isIntersecting) {
-          const activeIdx = videoCardsIdx.get(target);
-          emit({ type: "scroll", payload: { activeIdx } });
+          const nextIdx = videoCardsIdx.get(target);
+          if (nextIdx) {
+            emit({ type: "scroll", payload: { nextIdx } });
+          }
         }
       }),
     { threshold: 0.9 },
   );
 
-  async function applyEffect(state) {
-    console.log({ state });
-    switch (state.type) {
-      case "init": {
-        const { videos } = state.state;
+  /** @param {Effect} effect */
+  async function apply(effect) {
+    console.log({ state: effect });
+    switch (effect.type) {
+      case "mount": {
+        const { count } = effect.payload;
+
         const fragment = document.createDocumentFragment();
-        const cards = videos.map(({ url, thumbnail }, i) => {
-          const card = /** @type {HTMLElement} */ (VideoCard());
-          if (i < 4) {
-            const player = /** @type {HTMLElement} */ (
-              VideoPlayer({ url, thumbnail })
-            );
-            card.querySelector(".video-card_content").appendChild(player);
-          }
-          return card;
-        });
+        const cards = new Array(count)
+          .fill(0)
+          .map(() => /** @type {HTMLElement} */(VideoPlaceholder()));
 
-        cards.forEach(
-          /** @param {HTMLElement} card */(card) => {
-            videoCards.push(card);
-            videoCardsIdx.set(card, videoCards.length - 1);
-            fragment.appendChild(card);
-          },
-        );
-
-        feed.appendChild(fragment);
-        requestAnimationFrame(() => {
-          cards[0].querySelector("video").play();
-          cards.forEach(
-            /** @param {HTMLDivElement} card */
-            (card) => videoObserver.observe(card),
-          );
-        });
-
-        break;
-      }
-      case "chunk": {
-        const { videos } = state.state;
-        const fragment = document.createDocumentFragment();
-        const cards = videos.map(() => VideoCard());
         cards.forEach((card) => {
           videoCards.push(card);
           videoCardsIdx.set(card, videoCards.length - 1);
-
           fragment.appendChild(card);
         });
-        feed.appendChild(fragment);
 
-        cards.forEach(
-          /** @param {HTMLDivElement} card */
-          (card) => videoObserver.observe(card),
-        );
+        videosSlot.appendChild(fragment);
 
+        requestAnimationFrame(() => {
+          cards.forEach((card) => videoObserver.observe(card));
+        });
         break;
       }
-      case "detach": {
-        videoCards[state.state.idx].querySelector(
-          ".video-card_content",
-        ).innerHTML = "";
+      case "attachVideo": {
+        for (const [idx, video] of Object.entries(effect.payload.videos)) {
+          const { url, thumbnail } = video;
+
+          const videoCard = /** @type {HTMLMediaElement} */ (
+            VideoCard({ url, thumbnail })
+          );
+          videoCards[idx].append(videoCard);
+        }
         break;
       }
-      case "attach": {
-        const { url, thumbnail } = state.state.video;
-        const player = /** @type {HTMLMediaElement} */ (
-          VideoPlayer({ url, thumbnail })
-        );
-        videoCards[state.state.idx]
-          .querySelector(".video-card_content")
-          .appendChild(player);
+      case "detachVideo": {
+        effect.payload.idxsToDetach.forEach((idx) => {
+          const video = videoCards[idx].querySelector("video");
+          if (video) {
+            video.pause();
+            video.src = "";
+            video.load();
+
+            videoCards[idx].innerHTML = "";
+          }
+        });
         break;
       }
-      case "scroll": {
-        videoCards[state.state.prev].querySelector("video").pause();
-        await videoCards[state.state.next].querySelector("video").play();
-        console.log("scroll", state);
+
+      case "play": {
+        videoCards[effect.payload.idx]
+          .querySelector("video")
+          ?.play()
+          .catch((/**@type {Error}*/ e) => {
+            if (e.name !== "AbortError") throw e;
+          });
+        break;
       }
-      case "scroll_up": {
-        console.log("scroll_up");
+      case "pause": {
+        videoCards[effect.payload.idx].querySelector("video")?.pause();
+        break;
+      }
+      case "scrollTo": {
+        videoCards[effect.payload.idx].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+        break;
       }
 
       default:
@@ -110,58 +104,22 @@ export function videoFeed(apiUrl) {
   }
 
   return {
+    /**
+     * @param {HTMLElement} hostElement
+     */
     async mount(hostElement) {
       hostElement.appendChild(feed);
       (async () => {
         for await (const state of videoFeedState(apiUrl, iterator)) {
-          await applyEffect(state);
+          await apply(state);
         }
       })();
     },
   };
 }
-
-const VideoCard = () => html`
-  <article class="video-card">
-    <div class="video-card_content"></div>
-  </article>
-`;
-
-const VideoPlayer = ({ thumbnail, url }) => {
-  const videoElement = /** @type {HTMLVideoElement} */ (
-    html`<video
-      class="video-card_player"
-      playsinline
-      muted
-      loop
-      preload="auto"
-      src=${url}
-    />`
-  );
-
-  videoElement.load();
-
-  const thumbnailElement = /** @type {HTMLElement} */ html`<div
-    style="--thumbnail: url(${thumbnail});"
-    class="video-player__preload-cover"
-  ></div>`;
-
-  videoElement.addEventListener("canplay", () => {
-    //@ts-ignore
-    thumbnailElement.style.opacity = "0";
-  });
-
-  const container = html`<div class="video-card_player-container"></div>`;
-  container.appendChild(thumbnailElement);
-  container.appendChild(videoElement);
-  return container;
-};
-
-function VideoFeed() {
-  // @ts-ignore
-  return /** @type {HTMLElement} */ (html` <div class="video-feed"></div> `);
-}
-
+/**
+ * @returns {{iterator: AsyncIterable<Message>, emit: (event: Message) => void}}
+ */
 function asyncEventQueue() {
   const queue = [];
   let resolve = null;
@@ -179,6 +137,8 @@ function asyncEventQueue() {
       });
     },
   };
+
+  /** @param {Message} event */
   const emit = (event) => {
     if (resolve) {
       resolve({ value: event, done: false });
@@ -188,4 +148,9 @@ function asyncEventQueue() {
     }
   };
   return { iterator, emit };
+}
+
+/** @type {UnionConstructor<Message>} */
+function message(type, payload) {
+  return /** @type {any} */ ({ type, payload });
 }
