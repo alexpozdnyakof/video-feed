@@ -11,16 +11,17 @@ export const VideoPlaceholder = () => html`
 `;
 
 /**
- *  @param {{thumbnail: string; url: string}} props
+ *  @param {{thumbnail: string; url: string; autoplay?: boolean}} props
  *  @returns {HTMLElement}
  */
-export const VideoPlayer = ({ thumbnail, url }) => {
+export const VideoPlayer = ({ thumbnail, url, autoplay = false }) => {
   const videoEl = /** @type {HTMLVideoElement} */ (
     html`<video
       class="video-card_player"
       playsinline
       muted
       loop
+      ${autoplay ? "autoplay" : ""}
       preload="auto"
       src=${url}
     />`

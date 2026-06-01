@@ -14,12 +14,16 @@ export async function* videoFeedState(apiUrl, messages) {
 
   if (done) return;
 
-  let state = {
+  let state =
+    /** type {{active: number; videos: Array<number>, autoPlayEnabled: boolean}} */ {
     active: 0,
     videos: [...chunk],
+    autoPlayEnabled: true,
   };
 
-  const toAttach = [...activePlayers(state.active, state.videos.length)];
+  const toAttach = /** @type {Array<number>}*/ ([
+    ...activePlayers(state.active, state.videos.length),
+  ]);
 
   yield effect("mount", { count: CHUNK_SIZE });
 
@@ -27,7 +31,7 @@ export async function* videoFeedState(apiUrl, messages) {
     videos: Object.fromEntries(toAttach.map((idx) => [idx, state.videos[idx]])),
   });
 
-  yield effect("play", { idx: state.active });
+  yield effect("setAutoPlay", { idx: state.active });
 
   for await (const message of messages) {
     console.log({ event: message });
@@ -35,6 +39,8 @@ export async function* videoFeedState(apiUrl, messages) {
       case "scroll": {
         const nextIdx = message.payload.nextIdx;
         if (nextIdx !== state.active) {
+          if (state.autoPlayEnabled)
+            yield effect("removeAutoPlay", { idx: state.active });
           yield effect("play", { idx: nextIdx });
           yield effect("pause", { idx: state.active });
 
@@ -64,7 +70,6 @@ export async function* videoFeedState(apiUrl, messages) {
             ...state,
             active: nextIdx,
           };
-          //TODO: ползунок
         }
         break;
       }

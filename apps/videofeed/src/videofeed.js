@@ -19,7 +19,7 @@ export function videoFeed(apiUrl) {
       entries.forEach(({ target, isIntersecting }) => {
         if (isIntersecting) {
           const nextIdx = videoCardsIdx.get(target);
-          if (nextIdx) {
+          if (nextIdx !== undefined) {
             emit({ type: "scroll", payload: { nextIdx } });
           }
         }
@@ -95,6 +95,16 @@ export function videoFeed(apiUrl) {
           behavior: "smooth",
           block: "start",
         });
+        break;
+      }
+      case "setAutoPlay": {
+        const video = videoCards[effect.payload.idx].querySelector("video");
+        video.setAttribute("autoplay", "");
+        break;
+      }
+      case "removeAutoPlay": {
+        const video = videoCards[effect.payload.idx].querySelector("video");
+        video.removeAttribute("autoplay");
         break;
       }
 

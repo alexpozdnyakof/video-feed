@@ -1,12 +1,5 @@
-/**
- * @typedef {Object} VideoFile
- * @property {string} id
- * @property {string} name
- * @property {string} url
- * @property {string} thumbnail
- * @property {string} [size]
- * @property {{duratinMills?: string }} [videoMediaMetadata]
- */
+/** @import  {VideoFile} from "../types" */
+
 /**
  * @param {string} apiUrl
  * @returns {AsyncGenerator<VideoFile>}

@@ -21,7 +21,9 @@ export type Effect =
   | Event<"detachVideo", Record<"idxsToDetach", Array<number>>>
   | Event<"play", Record<"idx", number>>
   | Event<"pause", Record<"idx", number>>
-  | Event<"scrollTo", Record<"idx", number>>;
+  | Event<"scrollTo", Record<"idx", number>>
+  | Event<"setAutoPlay", Record<"idx", number>>
+  | Event<"removeAutoPlay", Record<"idx", number>>;
 
 /** CONSTRUCTOR HEPLER TYPES */
 export type MessageOrEffect = { type: string; payload?: unknown };
