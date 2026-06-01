@@ -39,8 +39,9 @@ export async function* videoFeedState(apiUrl, messages) {
       case "scroll": {
         const nextIdx = message.payload.nextIdx;
         if (nextIdx !== state.active) {
-          if (state.autoPlayEnabled)
+          if (state.autoPlayEnabled) {
             yield effect("removeAutoPlay", { idx: state.active });
+          }
           yield effect("play", { idx: nextIdx });
           yield effect("pause", { idx: state.active });
 
@@ -52,11 +53,13 @@ export async function* videoFeedState(apiUrl, messages) {
           const detach = [...currentPlayers.difference(nextPlayers)];
           const attach = [...nextPlayers.difference(currentPlayers)];
           yield effect("detachVideo", { idxsToDetach: detach });
-          yield effect("attachVideo", {
-            videos: Object.fromEntries(
-              attach.map((idx) => [idx, state.videos[idx]]),
-            ),
-          });
+          if (attach.length > 0) {
+            yield effect("attachVideo", {
+              videos: Object.fromEntries(
+                attach.map((idx) => [idx, state.videos[idx]]),
+              ),
+            });
+          }
 
           const remain = state.videos.length - 1 - nextIdx;
 
@@ -69,6 +72,7 @@ export async function* videoFeedState(apiUrl, messages) {
           state = {
             ...state,
             active: nextIdx,
+            autoPlayEnabled: false,
           };
         }
         break;
