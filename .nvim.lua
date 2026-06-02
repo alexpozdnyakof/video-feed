@@ -33,28 +33,3 @@ dap.configurations["javascript"] = {
 for _, lang in ipairs({ "typescript", "javascriptreact", "typescriptreact", "vue" }) do
   dap.configurations[lang] = dap.configurations["javascript"]
 end
-
-vim.lsp.config("ts_ls", {
-  settings = {
-    typescript = {
-      inlayHints = {
-        includeInlayFunctionLikeReturnTypeHints = false,
-        includeInlayVariableTypeHints = false,
-        includeInlayParameterNameHints = "none",
-        includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-        includeInlayPropertyDeclarationTypeHints = false,
-        includeInlayEnumMemberValueHints = false,
-      },
-    },
-    javascript = {
-      inlayHints = {
-        includeInlayFunctionLikeReturnTypeHints = false,
-        includeInlayVariableTypeHints = false,
-        includeInlayParameterNameHints = "none",
-        includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-        includeInlayPropertyDeclarationTypeHints = false,
-        includeInlayEnumMemberValueHints = false,
-      },
-    },
-  },
-})
