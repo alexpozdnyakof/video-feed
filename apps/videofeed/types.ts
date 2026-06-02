@@ -13,7 +13,8 @@ type Event<Type extends string, Payload = never> = Payload extends never
 export type Message =
   | Event<"fetch">
   | Event<"scroll", Record<"nextIdx", number>>
-  | Event<"scrollTo", Record<"direction", "up" | "down">>;
+  | Event<"scrollTo", Record<"direction", "up" | "down">>
+  | Event<"togglePlay", Record<"idx", number>>;
 
 export type Effect =
   | Event<"mount", Record<"count", number>>
@@ -23,8 +24,9 @@ export type Effect =
   | Event<"pause", Record<"idx", number>>
   | Event<"scrollTo", Record<"idx", number>>
   | Event<"setAutoPlay", Record<"idx", number>>
-  | Event<"removeAutoPlay", Record<"idx", number>>;
-
+  | Event<"removeAutoPlay", Record<"idx", number>>
+  | Event<"userPaused", Record<"idx", number>>
+  | Event<"removePaused", Record<"idx", number>>;
 /** CONSTRUCTOR HEPLER TYPES */
 export type MessageOrEffect = { type: string; payload?: unknown };
 

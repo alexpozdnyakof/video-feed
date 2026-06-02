@@ -4,9 +4,9 @@ import { IconButton } from "./icon-button.component";
 import { SideNavPanel } from "./side-nav-panel.component";
 import { UpArrowIcon, DownArrowIcon } from "./icons";
 
-/** @param {{onScrollUp: () => void; onScrollDown: () => void}} props */
-export function VideoFeed({ onScrollUp, onScrollDown }) {
-  return html`
+/** @param {{onScrollUp: () => void; onScrollDown: () => void; onVideoClick: (e: MouseEvent) => void}} props */
+export function VideoFeed({ onScrollUp, onScrollDown, onVideoClick }) {
+  const element = html`
     <div class="${styles.videoFeedContainer}">
       <div id="videoFeed" class="${styles.videoFeed}"></div>
       ${SideNavPanel({
@@ -23,4 +23,7 @@ export function VideoFeed({ onScrollUp, onScrollDown }) {
   })}
     </div>
   `;
+
+  element.addEventListener("click", onVideoClick);
+  return element;
 }

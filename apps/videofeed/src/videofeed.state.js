@@ -1,6 +1,6 @@
 /** @import  {Effect, Message, UnionConstructor} from "../types" */
 import { videoFeedApi } from "./videofeed.api";
-import { effect, clamp } from "./utils";
+import { effect, clamp, assertNever } from "./utils";
 
 const CHUNK_SIZE = 6;
 
@@ -17,10 +17,11 @@ export async function* videoFeedState(apiUrl, messages) {
   if (done) return;
 
   let state =
-    /** type {{active: number; videos: Array<number>, autoPlayEnabled: boolean}} */ {
+    /** type {{active: number; videos: Array<number>, autoPlayEnabled: boolean, played: number | null}} */ {
     active: 0,
     videos: [...chunk],
     autoPlayEnabled: true,
+    played: 0,
   };
 
   const toAttach = /** @type {Array<number>}*/ ([
@@ -43,6 +44,9 @@ export async function* videoFeedState(apiUrl, messages) {
         if (nextIdx !== state.active) {
           if (state.autoPlayEnabled) {
             yield effect("removeAutoPlay", { idx: state.active });
+          }
+          if (state.played === null) {
+            yield effect("removePaused", { idx: state.active });
           }
           yield effect("play", { idx: nextIdx });
           yield effect("pause", { idx: state.active });
@@ -75,6 +79,7 @@ export async function* videoFeedState(apiUrl, messages) {
             ...state,
             active: nextIdx,
             autoPlayEnabled: false,
+            played: nextIdx,
           };
         }
         break;
@@ -90,10 +95,30 @@ export async function* videoFeedState(apiUrl, messages) {
         }
         break;
       }
+      case "togglePlay": {
+        const { idx } = message.payload;
+        let played = state.played;
+        if (idx === played) {
+          yield effect("pause", { idx: played });
+          yield effect("userPaused", { idx: played });
+          played = null;
+        } else {
+          yield effect("play", { idx });
+          played = idx;
+        }
+
+        state = {
+          ...state,
+          played,
+        };
+
+        break;
+      }
+      default:
+        assertNever(message);
     }
   }
 }
-
 const ABOVE = 1;
 const ACTIVE = 1;
 const BELOW = 2;

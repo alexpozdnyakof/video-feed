@@ -13,4 +13,14 @@
   @media (width <= 430px) {
     border-radius: 0;
   }
+  &[data-paused]::after {
+    content: "▶";
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 4rem;
+    color: white;
+    pointer-events: none;
+  }
 }

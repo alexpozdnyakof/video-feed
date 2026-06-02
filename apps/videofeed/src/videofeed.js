@@ -1,27 +1,37 @@
-/** @import  {Effect, Message, UnionConstructor} from "../types" */
+/** @import  {Effect, Message } from "../types" */
 import { videoFeedState } from "./videofeed.state";
 import { VideoFeed, VideoPlayer, Placeholder } from "./ui";
-import { message } from "./utils";
+import { message, assertNever } from "./utils";
 
 /**
  * @param {string} apiUrl
  * @returns void
  */
 export function videoFeed(apiUrl) {
-  const videoCards = /**@type Array<HTMLElement>*/[];
-  const videoCardsIdx = /**@type WeakMap<HTMLElement, number>*/ new WeakMap();
+  const placeholders = /**@type Array<HTMLElement>*/[];
+  const placeholdersIdx = /**@type WeakMap<HTMLElement, number>*/ new WeakMap();
   const onScrollUp = () => emit(message("scrollTo", { direction: "up" }));
   const onScrollDown = () => emit(message("scrollTo", { direction: "down" }));
+  const onVideoClick = (/** @type {MouseEvent} e */ e) => {
+    if (!(e.target instanceof HTMLElement)) return;
 
-  const { iterator, emit } = asyncEventQueue();
-  const feed = VideoFeed({ onScrollUp, onScrollDown });
+    const placeholder = e.target.closest("[data-role='placeholder']");
+    if (!placeholder) return;
+
+    const idx = placeholdersIdx.get(placeholder);
+    emit(message("togglePlay", { idx }));
+  };
+
+  const { messages, emit } = messageQueue();
+
+  const feed = VideoFeed({ onScrollUp, onScrollDown, onVideoClick });
   const videosSlot = feed.querySelector("#videoFeed");
 
   const videoObserver = new IntersectionObserver(
     (entries) =>
       entries.forEach(({ target, isIntersecting }) => {
         if (isIntersecting) {
-          const nextIdx = videoCardsIdx.get(target);
+          const nextIdx = placeholdersIdx.get(target);
           if (nextIdx !== undefined) {
             emit(message("scroll", { nextIdx }));
           }
@@ -38,20 +48,20 @@ export function videoFeed(apiUrl) {
         const { count } = effect.payload;
 
         const fragment = document.createDocumentFragment();
-        const cards = new Array(count)
+        const newPlaceholders = new Array(count)
           .fill(0)
           .map(() => /** @type {HTMLElement} */(Placeholder()));
 
-        cards.forEach((card) => {
-          videoCards.push(card);
-          videoCardsIdx.set(card, videoCards.length - 1);
+        newPlaceholders.forEach((card) => {
+          placeholders.push(card);
+          placeholdersIdx.set(card, placeholders.length - 1);
           fragment.appendChild(card);
         });
 
         videosSlot.appendChild(fragment);
 
         requestAnimationFrame(() => {
-          cards.forEach((card) => videoObserver.observe(card));
+          newPlaceholders.forEach((card) => videoObserver.observe(card));
         });
         break;
       }
@@ -62,25 +72,26 @@ export function videoFeed(apiUrl) {
           const videoCard = /** @type {HTMLMediaElement} */ (
             VideoPlayer({ url, thumbnail })
           );
-          videoCards[idx].append(videoCard);
+          placeholders[idx].append(videoCard);
         }
         break;
       }
       case "detachVideo": {
         effect.payload.idxsToDetach.forEach((idx) => {
-          const video = videoCards[idx].querySelector("video");
+          const video = placeholders[idx].querySelector("video");
           if (video) {
             video.pause();
             video.src = "";
             video.load();
 
-            videoCards[idx].innerHTML = "";
+            placeholders[idx].innerHTML = "";
           }
         });
         break;
       }
       case "play": {
-        videoCards[effect.payload.idx]
+        delete placeholders[effect.payload.idx].dataset.paused;
+        placeholders[effect.payload.idx]
           .querySelector("video")
           ?.play()
           .catch((/**@type {Error}*/ e) => {
@@ -92,29 +103,37 @@ export function videoFeed(apiUrl) {
         break;
       }
       case "pause": {
-        videoCards[effect.payload.idx].querySelector("video")?.pause();
+        placeholders[effect.payload.idx].querySelector("video")?.pause();
         break;
       }
       case "scrollTo": {
-        videoCards[effect.payload.idx].scrollIntoView({
+        placeholders[effect.payload.idx].scrollIntoView({
           behavior: "smooth",
           block: "start",
         });
         break;
       }
       case "setAutoPlay": {
-        const video = videoCards[effect.payload.idx].querySelector("video");
+        const video = placeholders[effect.payload.idx].querySelector("video");
         video.setAttribute("autoplay", "");
         break;
       }
       case "removeAutoPlay": {
-        const video = videoCards[effect.payload.idx].querySelector("video");
+        const video = placeholders[effect.payload.idx].querySelector("video");
         video.removeAttribute("autoplay");
+        break;
+      }
+      case "userPaused": {
+        placeholders[effect.payload.idx].dataset.paused = "";
+        break;
+      }
+      case "removePaused": {
+        placeholders[effect.payload.idx].removeAttribute("data-paused");
         break;
       }
 
       default:
-        return;
+        assertNever(effect);
     }
   }
 
@@ -125,7 +144,7 @@ export function videoFeed(apiUrl) {
     async mount(hostElement) {
       hostElement.appendChild(feed);
       (async () => {
-        for await (const state of videoFeedState(apiUrl, iterator)) {
+        for await (const state of videoFeedState(apiUrl, messages)) {
           await apply(state);
         }
       })();
@@ -133,12 +152,12 @@ export function videoFeed(apiUrl) {
   };
 }
 /**
- * @returns {{iterator: AsyncIterable<Message>, emit: (event: Message) => void}}
+ * @returns {{messages: AsyncIterable<Message>, emit: (event: Message) => void}}
  */
-function asyncEventQueue() {
+function messageQueue() {
   const queue = [];
   let resolve = null;
-  const iterator = {
+  const messages = {
     [Symbol.asyncIterator]() {
       return this;
     },
@@ -162,5 +181,5 @@ function asyncEventQueue() {
       queue.push(event);
     }
   };
-  return { iterator, emit };
+  return { messages, emit };
 }
