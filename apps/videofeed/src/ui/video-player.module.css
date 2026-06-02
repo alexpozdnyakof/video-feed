@@ -1,7 +1,6 @@
 .videoCard {
   width: var(--video-player-width);
   height: var(--video-player-height);
-  border-radius: 12px;
   overflow: hidden;
   position: relative;
 }
@@ -9,6 +8,7 @@
 .videoPlayer {
   width: var(--video-player-width);
   height: var(--video-player-height);
+  object-fit: cover;
 }
 
 .videoCover {

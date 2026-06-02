@@ -1,25 +1,32 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
+  --bg: oklch(1 0 0);
   --grid-size: 8px;
   --sans: system-ui, "Segoe UI", Roboto, sans-serif;
   --container-padding: calc(var(--grid-size) * 4);
   --video-player-ratio: 0.5625;
-  --video-player-height: calc(100dvh - calc(var(--container-padding) * 2));
+  --video-player-height: calc(100dvh - calc(var(--container-padding) * 3));
   --video-player-width: calc(
     var(--video-player-height) * var(--video-player-ratio)
   );
-
+  --breakpoint-mobile: 430;
+  --video-feed-gap: calc(var(--grid-size) * 4);
+  --video-feed-top-margin: calc(var(--grid-size) * 8);
   font: 100%/145% var(--sans);
   color-scheme: light dark;
-  color: var(--text);
   background: var(--bg);
 }
-
+@media (width <= 430px) {
+  :root {
+    --video-player-width: 100dvw;
+    --video-player-height: 100dvh;
+    --container-padding: 0;
+    --video-feed-gap: 0;
+    --video-feed-top-margin: 0;
+  }
+}
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #111;
+    --bg: oklch(0.1776 0 0);
   }
 }
 *,

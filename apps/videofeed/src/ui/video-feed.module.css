@@ -18,4 +18,6 @@
     display: none;
   }
   scrollbar-width: none;
+  gap: var(--video-feed-gap);
+  margin-top: var(--video-feed-top-margin);
 }

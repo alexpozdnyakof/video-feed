@@ -8,7 +8,9 @@
   display: flex;
   flex: 0 0 auto;
   position: relative;
-  padding-block: calc(var(--grid-size) * 4);
   border-radius: calc(var(--grid-size) * 2);
   overflow: hidden;
+  @media (width <= 430px) {
+    border-radius: 0;
+  }
 }
