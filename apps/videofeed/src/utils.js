@@ -14,3 +14,8 @@ export function message(type, payload) {
 export function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
+
+/** @param {never} x @returns {never} */
+export const assertNever = (x) => {
+  throw new Error("Unhandled discriminat: " + JSON.stringify(x));
+};
