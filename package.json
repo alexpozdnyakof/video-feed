@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "turbo test",
+    "build": "turbo build",
     "start:videofeed": "pnpm --filter=videofeed dev",
     "build:videofeed": "pnpm --filter=videofeed build",
     "start:worker": "pnpm --filter=worker dev",
@@ -24,5 +25,8 @@
     }
   },
   "type": "module",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "turbo": "^2.9.16"
+  }
 }
