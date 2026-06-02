@@ -1,4 +1,4 @@
-/** @import  {Effect, Message, UnionConstructor, VideoFile} from "../types" */
+/** @import  {Effect, Message, VideoFile} from "../types" */
 import { videoFeedApi } from "./videofeed.api";
 import { effect, clamp, assertNever } from "./utils";
 
@@ -72,7 +72,6 @@ export async function* videoFeedState(apiUrl, messages) {
           if (attach.length > 0) {
             yield effect("attachVideo", {
               muted: state.muted,
-
               videos: Object.fromEntries(
                 attach.map((idx) => [idx, state.videos[idx]]),
               ),
