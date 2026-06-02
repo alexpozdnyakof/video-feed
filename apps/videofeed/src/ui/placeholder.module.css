@@ -4,14 +4,16 @@
   justify-content: center;
   scroll-snap-align: start;
   scroll-snap-stop: always;
-  scroll-padding-top: calc(var(--grid-size) * 4);
+  scroll-padding-top: calc(var(--grid-size) * 8);
   display: flex;
   flex: 0 0 auto;
   position: relative;
   border-radius: calc(var(--grid-size) * 2);
   overflow: hidden;
+  contain: strict;
   @media (width <= 430px) {
     border-radius: 0;
+    scroll-padding-top: 0;
   }
   &[data-paused]::after {
     content: "▶";
