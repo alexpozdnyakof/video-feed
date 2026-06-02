@@ -1,8 +1,17 @@
-/** @import  {Effect, Message, UnionConstructor} from "../types" */
+/** @import  {Effect, Message, UnionConstructor, VideoFile} from "../types" */
 import { videoFeedApi } from "./videofeed.api";
 import { effect, clamp, assertNever } from "./utils";
 
 const CHUNK_SIZE = 6;
+
+/**
+ * @typedef {Object} State
+ * @property {number} active
+ * @property {Array<VideoFile>} videos
+ * @property {boolean} autoPlayEnabled
+ * @property {number | null} played
+ * @property {boolean} muted
+ */
 
 /**
  * @param {string} apiUrl
@@ -15,13 +24,13 @@ export async function* videoFeedState(apiUrl, messages) {
   const { value: chunk, done } = await videoChunk.next();
 
   if (done) return;
-
-  let state =
-    /** type {{active: number; videos: Array<number>, autoPlayEnabled: boolean, played: number | null}} */ {
+  /** @type {State} */
+  let state = {
     active: 0,
     videos: [...chunk],
     autoPlayEnabled: true,
     played: 0,
+    muted: true,
   };
 
   const toAttach = /** @type {Array<number>}*/ ([
@@ -31,6 +40,7 @@ export async function* videoFeedState(apiUrl, messages) {
   yield effect("mount", { count: CHUNK_SIZE });
 
   yield effect("attachVideo", {
+    muted: state.muted,
     videos: Object.fromEntries(toAttach.map((idx) => [idx, state.videos[idx]])),
   });
 
@@ -61,6 +71,8 @@ export async function* videoFeedState(apiUrl, messages) {
           yield effect("detachVideo", { idxsToDetach: detach });
           if (attach.length > 0) {
             yield effect("attachVideo", {
+              muted: state.muted,
+
               videos: Object.fromEntries(
                 attach.map((idx) => [idx, state.videos[idx]]),
               ),
@@ -112,6 +124,11 @@ export async function* videoFeedState(apiUrl, messages) {
           played,
         };
 
+        break;
+      }
+      case "toggleMute": {
+        state = { ...state, muted: !state.muted };
+        yield effect("setMuted", { muted: state.muted });
         break;
       }
       default:

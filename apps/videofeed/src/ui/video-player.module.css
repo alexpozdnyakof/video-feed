@@ -23,3 +23,12 @@
   transform: scale(1.1);
   transition: 0.3s ease-out;
 }
+
+.videoControls {
+  width: 100%;
+  padding: calc(var(--grid-size) * 2);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}

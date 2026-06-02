@@ -19,8 +19,22 @@ export function videoFeed(apiUrl) {
     if (!placeholder) return;
 
     const idx = placeholdersIdx.get(placeholder);
-    emit(message("togglePlay", { idx }));
+
+    const nearButton = /** @type {HTMLElement | null} */ (
+      e.target.closest("[data-action]")
+    );
+    const action = nearButton?.dataset.action;
+
+    switch (action) {
+      case "mute": {
+        emit(message("toggleMute"));
+        break;
+      }
+      default:
+        emit(message("togglePlay", { idx }));
+    }
   };
+  const onToggleMute = () => emit(message("toggleMute"));
 
   const { messages, emit } = messageQueue();
 
@@ -66,11 +80,12 @@ export function videoFeed(apiUrl) {
         break;
       }
       case "attachVideo": {
-        for (const [idx, video] of Object.entries(effect.payload.videos)) {
+        const { videos, muted } = effect.payload;
+        for (const [idx, video] of Object.entries(videos)) {
           const { url, thumbnail } = video;
 
           const videoCard = /** @type {HTMLMediaElement} */ (
-            VideoPlayer({ url, thumbnail })
+            VideoPlayer({ url, thumbnail, muted })
           );
           placeholders[idx].append(videoCard);
         }
@@ -84,7 +99,7 @@ export function videoFeed(apiUrl) {
             video.src = "";
             video.load();
 
-            placeholders[idx].innerHTML = "";
+            placeholders[idx].replaceChildren();
           }
         });
         break;
@@ -131,7 +146,15 @@ export function videoFeed(apiUrl) {
         placeholders[effect.payload.idx].removeAttribute("data-paused");
         break;
       }
-
+      case "setMuted": {
+        const { muted } = effect.payload;
+        videosSlot
+          .querySelectorAll("video")
+          .forEach((/** @type {HTMLVideoElement}*/ video) => {
+            video.muted = muted;
+          });
+        break;
+      }
       default:
         assertNever(effect);
     }

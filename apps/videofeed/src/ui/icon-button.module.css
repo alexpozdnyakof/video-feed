@@ -6,4 +6,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: oklch(0.178 0 0 / 0.6);
+}
+
+.buttonSizeSm {
+  width: calc(var(--grid-size) * 6);
+  height: calc(var(--grid-size) * 6);
 }
