@@ -42,6 +42,10 @@ export default {
 			return getVideoStream(request, url, env, origin);
 		}
 
+		if (url.pathname === '/thumbnail') {
+			return getThumbnail(url, env, origin);
+		}
+
 		return new Response('Not Found', { status: 404 });
 	},
 } satisfies ExportedHandler<Env>;
@@ -53,7 +57,7 @@ async function getVideoFeed(url: URL, env: Env, origin: string) {
 		key: env.GOOGLE_API_KEY,
 		q: `'${env.FOLDER_ID}' in parents and mimeType contains 'video/' and trashed = false`,
 		fields: 'nextPageToken, files(id, name, size,thumbnailLink, videoMediaMetadata)',
-		pageSize: '3',
+		pageSize: '6',
 		orderBy: 'createdTime desc',
 		...(pageToken && { pageToken }),
 	});
@@ -72,7 +76,7 @@ async function getVideoFeed(url: URL, env: Env, origin: string) {
 		id,
 		name,
 		size: size ? `${bytesToMegabytes(Number(size))} MB` : null,
-		thumbnail: thumbnailLink ?? null,
+		thumbnail: thumbnailLink ? `/thumbnail?imageUrl=${encodeURIComponent(thumbnailLink)}` : null,
 		duration: videoMediaMetadata?.durationMills ? formatDuration(Number(videoMediaMetadata.durationMills)) : null,
 		url: `/stream?fileId=${id}`,
 	}));
@@ -109,6 +113,8 @@ async function getVideoStream(request: Request, url: URL, env: Env, origin: stri
 		'Content-Type': response.headers.get('Content-Type') ?? 'video/mp4',
 		'Accept-Ranges': 'bytes',
 		'Cache-Control': 'public, max-age=86400',
+		ETag: fileId,
+
 		...cors(origin),
 	});
 
@@ -120,5 +126,25 @@ async function getVideoStream(request: Request, url: URL, env: Env, origin: stri
 	return new Response(response.body, {
 		status: response.status,
 		headers,
+	});
+}
+
+async function getThumbnail(url: URL, env: Env, origin: string) {
+	const imageUrl = url.searchParams.get('imageUrl');
+	if (!imageUrl) return new Response('imageUrl requierd', { status: 400 });
+
+	//TODO: imageUrl verification
+	const imageResult = await fetch(imageUrl);
+
+	if (!imageResult.ok) {
+		return new Response('Failed to load image', { status: imageResult.status });
+	}
+
+	return new Response(imageResult.body, {
+		headers: {
+			'Content-Type': imageResult.headers.get('Content-Type') ?? 'image/jpeg',
+			'Cache-Control': 'public, max-age=86400',
+			...cors(origin),
+		},
 	});
 }
