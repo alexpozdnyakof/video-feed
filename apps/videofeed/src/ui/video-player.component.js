@@ -34,6 +34,6 @@ export const VideoPlayer = ({ thumbnail, url, autoplay = false }) => {
 
   return html`<div class="${styles.videoCard}">
     ${thumbnailEl}
-    <div class="video-player">${videoEl}</div>
+    <div class="${styles.videoPlayer}">${videoEl}</div>
   </div>`;
 };
