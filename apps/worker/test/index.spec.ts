@@ -74,6 +74,26 @@ describe('Worker', () => {
 				expect(response.headers.get('Cache-Control')).toContain('max-age=60');
 			});
 		});
+
+		it('should set pageSize from the request', async () => {
+			let url = '';
+			vi.stubGlobal('fetch', async (passedUrl: string) => {
+				url = passedUrl;
+				return makeResponse([]);
+			});
+			await workerCall(new Request('https://worker/feed?pageSize=12'));
+			expect(url).toContain('pageSize=12');
+		});
+
+		it('should set default pageSize', async () => {
+			let url = '';
+			vi.stubGlobal('fetch', async (passedUrl: string) => {
+				url = passedUrl;
+				return makeResponse([]);
+			});
+			await workerCall(new Request('https://worker/feed'));
+			expect(url).toContain('pageSize=6');
+		});
 	});
 
 	describe('GET /stream', () => {
