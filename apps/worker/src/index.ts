@@ -52,12 +52,13 @@ export default {
 
 async function getVideoFeed(url: URL, env: Env, origin: string) {
 	const pageToken = url.searchParams.get('pageToken') ?? '';
+	const pageSize = url.searchParams.get('pageSize') ?? String(6);
 
 	const params = new URLSearchParams({
 		key: env.GOOGLE_API_KEY,
 		q: `'${env.FOLDER_ID}' in parents and mimeType contains 'video/' and trashed = false`,
 		fields: 'nextPageToken, files(id, name, size,thumbnailLink, videoMediaMetadata)',
-		pageSize: '6',
+		pageSize,
 		orderBy: 'createdTime desc',
 		...(pageToken && { pageToken }),
 	});
