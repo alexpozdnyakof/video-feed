@@ -34,7 +34,6 @@ export function videoFeed(apiUrl) {
         emit(message("togglePlay", { idx }));
     }
   };
-  const onToggleMute = () => emit(message("toggleMute"));
 
   const { messages, emit } = messageQueue();
 
