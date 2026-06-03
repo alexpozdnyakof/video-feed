@@ -10,7 +10,8 @@
     "build:videofeed": "pnpm --filter=videofeed build",
     "start:worker": "pnpm --filter=worker dev",
     "deploy:worker": "pnpm --filter=worker deploy",
-    "typegen:backend": "pnpm --filter=worker cf-typegen",
+    "test:worker": "pnpm --filter=worker test",
+    "typegen:worker": "pnpm --filter=worker cf-typegen",
     "build:html": "pnpm --filter=html build",
     "test:html": "pnpm --filter=html test"
   },
