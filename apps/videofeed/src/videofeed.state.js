@@ -1,8 +1,7 @@
 /** @import  {Effect, Message, VideoFile} from "../types" */
 import { videoFeedApi } from "./videofeed.api";
 import { effect, clamp, assertNever } from "./utils";
-
-const CHUNK_SIZE = 6;
+import { CHUNK_SIZE, VIDEO_PLAYERS_TO_SHOW } from "./videofeed.constraints";
 
 /**
  * @typedef {Object} State
@@ -135,10 +134,8 @@ export async function* videoFeedState(apiUrl, messages) {
     }
   }
 }
-const ABOVE = 1;
-const ACTIVE = 1;
-const BELOW = 2;
-const SIZE = ABOVE + ACTIVE + BELOW;
+
+const { ABOVE, TOTAL } = VIDEO_PLAYERS_TO_SHOW;
 
 /**
  * @param {number} activeIdx
@@ -146,8 +143,8 @@ const SIZE = ABOVE + ACTIVE + BELOW;
  * @returns {Set<number>}
  */
 const activePlayers = (activeIdx, length) => {
-  const start = clamp(activeIdx - ABOVE, 0, length - SIZE);
+  const start = clamp(activeIdx - ABOVE, 0, length - TOTAL);
   const s = new Set();
-  for (let i = start; i < start + SIZE && i < length; i++) s.add(i);
+  for (let i = start; i < start + TOTAL && i < length; i++) s.add(i);
   return s;
 };
