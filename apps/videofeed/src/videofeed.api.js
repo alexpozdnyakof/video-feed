@@ -1,3 +1,5 @@
+import { CHUNK_SIZE } from "./videofeed.constraints";
+
 /** @import  {VideoFile} from "../types" */
 
 /**
@@ -8,6 +10,7 @@
 export async function* videoFeedApi(apiUrl) {
   let nextPageToken = null;
   const url = new URL(apiUrl.concat("/feed"));
+  url.searchParams.set("pageSize", String(CHUNK_SIZE));
 
   while (true) {
     if (nextPageToken) {
