@@ -27,6 +27,7 @@ export const VideoPlayer = ({
   const thumbnailEl = html`<div
     style="--thumbnail: url(${thumbnail});"
     class="${styles.videoCover}"
+    data-testid="video-cover"
   ></div>`;
 
   const videoControls = html`<div class="${styles.videoControls}">

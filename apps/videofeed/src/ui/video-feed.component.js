@@ -14,10 +14,12 @@ export function VideoFeed({ onScrollUp, onScrollDown, onVideoClick }) {
       IconButton({
         children: UpArrowIcon(),
         onClick: onScrollUp,
+        dataAction: "prev-video",
       }),
       IconButton({
         children: DownArrowIcon(),
         onClick: onScrollDown,
+        dataAction: "next-video",
       }),
     ],
   })}
