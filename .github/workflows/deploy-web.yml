@@ -20,7 +20,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Build
-        run: pnpm turbo build --filter=video-feed...
+        run: pnpm turbo build --filter=videofeed...
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       - name: Deploy to Vercel

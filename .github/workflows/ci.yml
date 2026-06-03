@@ -12,25 +12,11 @@ jobs:
       PNPM_HOME: /home/runner/.local/share/pnpm
     steps:
       - uses: actions/checkout@v4
-      - name: Debug
-        run: |
-          pwd
-          ls -la
-          cat pnpm-workspace.yaml
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: Install pnpm
         run: npm install -g pnpm@11.5.1
-      - name: Debug 2
-        run: |
-          ls -la pnpm-lock.yaml
-          pnpm --version
-      - name: Debug pnpm
-        run: |
-          pnpm store path
-          cat pnpm-workspace.yaml
-          pnpm list --recursive 2>&1 || true
       - run: pnpm install --frozen-lockfile --reporter=default
       - name: Test
         run: pnpm turbo  test
