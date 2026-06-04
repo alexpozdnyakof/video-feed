@@ -127,17 +127,7 @@ export function videoFeed(apiUrl) {
         });
         break;
       }
-      case "setAutoPlay": {
-        const video = placeholders[effect.payload.idx].querySelector("video");
-        video.setAttribute("autoplay", "");
-        break;
-      }
-      case "removeAutoPlay": {
-        const video = placeholders[effect.payload.idx].querySelector("video");
-        video.removeAttribute("autoplay");
-        break;
-      }
-      case "userPaused": {
+      case "setPaused": {
         placeholders[effect.payload.idx].dataset.paused = "";
         break;
       }

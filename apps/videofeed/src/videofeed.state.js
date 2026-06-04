@@ -7,7 +7,6 @@ import { CHUNK_SIZE, VIDEO_PLAYERS_TO_SHOW } from "./videofeed.constraints";
  * @typedef {Object} State
  * @property {number} active
  * @property {Array<VideoFile>} videos
- * @property {boolean} autoPlayEnabled
  * @property {number | null} played
  * @property {boolean} muted
  */
@@ -27,8 +26,7 @@ export async function* videoFeedState(apiUrl, messages) {
   let state = {
     active: 0,
     videos: [...chunk],
-    autoPlayEnabled: true,
-    played: 0,
+    played: null,
     muted: true,
   };
 
@@ -43,7 +41,7 @@ export async function* videoFeedState(apiUrl, messages) {
     videos: Object.fromEntries(toAttach.map((idx) => [idx, state.videos[idx]])),
   });
 
-  yield effect("setAutoPlay", { idx: state.active });
+  yield effect("setPaused", { idx: state.active });
 
   for await (const message of messages) {
     console.log({ event: message });
@@ -51,9 +49,6 @@ export async function* videoFeedState(apiUrl, messages) {
       case "scroll": {
         const nextIdx = message.payload.nextIdx;
         if (nextIdx !== state.active) {
-          if (state.autoPlayEnabled) {
-            yield effect("removeAutoPlay", { idx: state.active });
-          }
           if (state.played === null) {
             yield effect("removePaused", { idx: state.active });
           }
@@ -88,7 +83,6 @@ export async function* videoFeedState(apiUrl, messages) {
           state = {
             ...state,
             active: nextIdx,
-            autoPlayEnabled: false,
             played: nextIdx,
           };
         }
@@ -110,7 +104,7 @@ export async function* videoFeedState(apiUrl, messages) {
         let played = state.played;
         if (idx === played) {
           yield effect("pause", { idx: played });
-          yield effect("userPaused", { idx: played });
+          yield effect("setPaused", { idx: played });
           played = null;
         } else {
           yield effect("play", { idx });

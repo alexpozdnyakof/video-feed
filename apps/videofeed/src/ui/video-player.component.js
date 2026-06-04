@@ -6,19 +6,13 @@ import { MuteIcon, UnmuteIcon } from "./icons";
  *  @param {{thumbnail: string; url: string; autoplay?: boolean; muted?: boolean }} props
  *  @returns {HTMLElement}
  */
-export const VideoPlayer = ({
-  thumbnail,
-  url,
-  autoplay = false,
-  muted = true,
-}) => {
+export const VideoPlayer = ({ thumbnail, url, muted = true }) => {
   const videoEl = /** @type {HTMLVideoElement} */ (
     html`<video
       class="${styles.videoPlayer}"
       playsinline
       loop
       ${muted ? "muted" : ""}
-      ${autoplay ? "autoplay" : ""}
       preload="auto"
       src=${url}
     />`
