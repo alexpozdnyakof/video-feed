@@ -2,7 +2,7 @@ import { html } from "html";
 import styles from "./icon-button.module.css";
 
 /**
- * @param {{onClick?: () => void; children?: Node | Array<Node> | string; className?: string; size?: "sm"; dataAction?: string}} props
+ * @param {{onClick?: () => void; children?: Node | Array<Node> | string; className?: string; size?: "sm"; dataAction?: string; }} props
  */
 export function IconButton({ onClick, children, className, size, dataAction }) {
   const element = html`<button
