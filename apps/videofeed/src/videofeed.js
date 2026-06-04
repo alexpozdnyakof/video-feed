@@ -1,5 +1,5 @@
 /** @import  {Effect, Message } from "../types" */
-import { videoFeedState } from "./videofeed.state";
+import { videoFeedState } from "./videofeed.model";
 import { VideoFeed, VideoPlayer, Placeholder } from "./ui";
 import { message, assertNever } from "./utils";
 
