@@ -26,9 +26,7 @@ export type Effect =
   | Event<"play", Record<"idx", number>>
   | Event<"pause", Record<"idx", number>>
   | Event<"scrollTo", Record<"idx", number>>
-  | Event<"setAutoPlay", Record<"idx", number>>
-  | Event<"removeAutoPlay", Record<"idx", number>>
-  | Event<"userPaused", Record<"idx", number>>
+  | Event<"setPaused", Record<"idx", number>>
   | Event<"removePaused", Record<"idx", number>>
   | Event<"setMuted", Record<"muted", boolean>>;
 /** CONSTRUCTOR HEPLER TYPES */
