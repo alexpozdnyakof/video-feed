@@ -1,5 +1,5 @@
 {
-  "outputDirectory": "/apps/videofed/dist",
+  "outputDirectory": "/apps/videofeed/dist",
   "buildCommand": "pnpm run build:videofeed",
   "installCommand": "pnpm install"
 }
